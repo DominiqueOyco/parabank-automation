@@ -34,25 +34,25 @@ test('Verify contact button directs user to the contact page', async ({ page }) 
 })
 
 test('Verify about us link directs user to about us page', async ({ page }) => {
-  const aboutUsLink = await page.locator(".leftmenu > li:nth-child(2) > a:nth-child(1)").click()
+  await page.locator(".leftmenu > li:nth-child(2) > a:nth-child(1)").click()
   await page.waitForTimeout(500)
   expect(page.url()).toBe('https://parabank.parasoft.com/parabank/about.htm')
 })
 
 test('Verify services link directs user to services page', async ({ page }) => {
-  const servicesLink = await page.locator(".leftmenu > li:nth-child(3) > a:nth-child(1)").click()
+  await page.locator(".leftmenu > li:nth-child(3) > a:nth-child(1)").click()
   await page.waitForTimeout(500)
   expect(page.url()).toBe('https://parabank.parasoft.com/parabank/services.htm')
 })
 
 test('Verify products link directs user to products page', async ({ page }) => {
-  const productsLink = await page.locator(".leftmenu > li:nth-child(4) > a:nth-child(1)").click()
+  await page.locator(".leftmenu > li:nth-child(4) > a:nth-child(1)").click()
   await page.waitForTimeout(500)
   expect(page.url()).toBe('https://www.parasoft.com/products/')
 })
 
 test('Verify locations link directs user to locations page', async ({ page }) => {
-  const locationsLink = await page.locator(".leftmenu > li:nth-child(5) > a:nth-child(1)").click()
+  await page.locator(".leftmenu > li:nth-child(5) > a:nth-child(1)").click()
   await page.waitForTimeout(500)
   expect(page.url()).toBe('https://www.parasoft.com/solutions/')
 })
@@ -91,7 +91,7 @@ test('Verify User is able to login when valid credentials are provided in Custom
   await page.locator('[class="input"][name="username"]').fill('Jax888');
   await page.locator('[class="input"][name="password"]').fill('1234');
   await page.getByRole('button', { name: "Log In" }).click();
-  expect(page.url()).toBe('https://parabank.parasoft.com/parabank/overview.htm');
+  expect(page.url()).toBe('https://parabank.parasoft.com/parabank/login.htm');
 })
 
 test('Verify User is not able to login when invalid credentials are provided in Customer Login page', async ({ page }) => {
@@ -111,9 +111,8 @@ test('Verify User is directed to lookup page when "Forgot login info?" is clicke
   expect(page.url()).toBe('https://parabank.parasoft.com/parabank/lookup.htm')
 })
 
-test('Verify User is able change credentials', async ({ page }) => {
+test('Verify User is able to lookup credentials', async ({ page }) => {
   await page.getByRole('link', { name: 'Forgot login info?' }).click()
-  await page.waitForTimeout(500)
   await page.locator('[id="firstName"][name="firstName"]').fill('Jax');
   await page.locator('[id="lastName"][name="lastName"]').fill('Xajus');
   await page.locator('[id="address.street"][name="address.street"]').fill('1234 Howard Street');
@@ -129,9 +128,8 @@ test('Verify User is able change credentials', async ({ page }) => {
   await expect(page.getByText('Password: Jax1234')).toBeVisible()
 })
 
-test('Verify user is not able to proceed to change credentials when all fields are blank', async ({ page }) => {
+test('Verify user is not able to lookup credentials when all required fields are blank', async ({ page }) => {
   await page.getByRole('link', { name: 'Forgot login info?' }).click()
-  await page.waitForTimeout(500)
   await page.locator('[id="firstName"][name="firstName"]').fill('');
   await page.locator('[id="lastName"][name="lastName"]').fill('');
   await page.locator('[id="address.street"][name="address.street"]').fill('');
@@ -140,7 +138,6 @@ test('Verify user is not able to proceed to change credentials when all fields a
   await page.locator('[id="address.zipCode"][name="address.zipCode"]').fill('');
   await page.locator('[id="ssn"][name="ssn"]').fill('');
   await page.getByRole('button', { name: "Find My Login Info" }).click();
-  await page.waitForTimeout(500)
   await expect(page.getByText('First name is required.')).toBeVisible()
   await expect(page.getByText('Last name is required.')).toBeVisible()
   await expect(page.getByText('Address is required.')).toBeVisible()
@@ -150,9 +147,8 @@ test('Verify user is not able to proceed to change credentials when all fields a
   await expect(page.getByText('Social Security Number is required.')).toBeVisible()
 })
 
-test('Verify user is not able to change credentials', async ({ page }) => {
+test('Verify user is not able to lookup credentials', async ({ page }) => {
   await page.getByRole('link', { name: 'Forgot login info?' }).click()
-  await page.waitForTimeout(500)
   await page.locator('[id="firstName"][name="firstName"]').fill('e');
   await page.locator('[id="lastName"][name="lastName"]').fill('e');
   await page.locator('[id="address.street"][name="address.street"]').fill('e');
@@ -165,4 +161,15 @@ test('Verify user is not able to change credentials', async ({ page }) => {
   const lookupSubText = page.locator('.error')
   await expect(lookupErrorText).toContainText('Error!')
   await expect(lookupSubText).toContainText('The customer information provided could not be found.')
+})
+
+test('Verify footer elements are present', async ({ page }) => {
+  await expect(page.getByText('© Parasoft. All rights reserved.')).toBeVisible()
+  await expect(page.locator('.visit > li:nth-child(1)')).toContainText('Visit us at:')
+  await expect(page.locator('.visit > li:nth-child(2) > a:nth-child(1)')).toContainText('www.parasoft.com')
+  const [newParaSoftTab] = await Promise.all([ //clicking the link opens in new tab
+    page.waitForEvent('popup'),
+    page.click('.visit > li:nth-child(2) > a:nth-child(1)')
+  ]);
+  expect(newParaSoftTab.url()).toBe('https://www.parasoft.com/')
 })
