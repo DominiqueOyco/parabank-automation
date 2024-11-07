@@ -22,7 +22,6 @@ test.describe('Login and account creation verification', () => {
 
   test('Verify user is able to create a new account', async ({ page }) => {
     await page.getByRole('link', { name: 'Register' }).click()
-    await page.waitForTimeout(500)
     //TODO: create another class that generates random first name, last name, address, phone number, and ssn
     await page.locator('[id="customer.firstName"][name="customer.firstName"]').fill('Jax');
     await page.locator('[id="customer.lastName"][name="customer.lastName"]').fill('Xajus');
